@@ -15,7 +15,7 @@ class EchoServerClientProtocol(asyncio.Protocol):
     def __init__(self, serverID, port, loop):
         self.serverID = serverID
         self.port = port
-        self.apiKey = "AIzaSyBtr4jGS0d7Fb-56izHeMRTazDCiV9wkO4"
+        self.apiKey = "AIzaSyBtr4jGS0XXXXXXXizHeMRTazDCiV9wkO4"
         self.loop = loop
         self.conn = {
             'Goloman': ['Hands', 'Holiday', 'Wilkes'],
