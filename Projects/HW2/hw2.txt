@@ -1,0 +1,55 @@
+After-action report:
+I solved the problem by following the method described to us in class.
+So my make_matcher has a ton of currying involved as it divides the 
+given fragment into prefix and suffix. If the prefix works, then it uses
+the given acceptor to determine if the suffix is acceptable as well. 
+I realized as I was writing make_matcher that I could use it to solve 
+make_parser as well. My idea was simple, in that I would use make_matcher 
+to obtain a derivation which I would then use to engage in a horizontal 
+depth-first search along with an overall search in order to create the 
+parse tree. While this was the basic idea, I kept running into problems 
+where I realized my derivation needed a bit more information inside 
+the Some clause than what I was providing in make_matcher. I pondered over 
+this problem for several hours across multiple days, even missing the 
+initial deadline. However, I ended up using neither since I was not able 
+to solve this problem and was running out of late days. Moreover, I needed 
+to work on project 3 and my midterm as well. So I simply created a modified 
+version of my make_matcher that concatenated rules onto the ones that work 
+already. After that I proceeded to take this derivation and run depth-first 
+search on it. Some of the weaknesses of my solution in its intended 
+application include the fact that it can go into a recursive infinite loop
+if there's a rule that trips up the matcher. The types of rules that 
+can cause this to occur are rules that reference themselves. I will now 
+explain this idea through an extended example. Suppose we have a grammar 
+with the same nonterminal symbols as in my test file: 
+type awkarpit_nonterminals = | Hi | Hello | Bye | Goodbye
+If we have a grammar with a rule such as this one it can cause my 
+solution to go into an infinite loop:
+| Hi -> [[N Hi]; [N Hello]; [T "Hi"]; [N Bye; N Goodbye]]
+The reason this rule would cause this loop to occur is due to the fact 
+that the nonterminal symbol Hi references itself in this rule [N Hi].
+The matcher will not know which rule to follow and can keep following 
+this rule in an effort to match it. This recursive loop occurs less 
+often if the recursive rule is at the end of the rules associated 
+with a particular nonterminal symbol, which makes sense because 
+the other rules are tried before the recursive rule so if a solution 
+exists, it will be found. However, if it doesn't exist, it can very easily 
+go into an infinite loop. A similar issue that my solution fails to handle 
+are interdependent rules. For example, using the same nonterminal symbols 
+above and adding the following rules would create this issue:
+| Hi -> [[N Hi]; [N Hello]; [T "Hi"]; [N Bye; N Goodbye]]
+| Hello -> [[N Hi]; [N Goodbye]; [T "Hello"]]
+Now the nonterminal symbol Hi points to the nonterminal symbol Hello and vice 
+versa. This creates a cyclic dependency that can make the parser go into an 
+infinite loop as it goes back and forth between these rules. One potential 
+solution I can think of for this issue would be to identify such cyclic 
+dependencies and recursive rules as a special case. In order to handle such 
+cases, the parser should only follow these rules as a case of last resort 
+once it has handled all other possibilities. This will allow a solution to be
+found if one exists, and if one doesn't, we can add a condition to allow it 
+to timeout once it reaches a certain complexity. We can identify these rules 
+by checking the symbols and keeping track of which ones have already been
+seen. If we encounter a symbol that we have already seen, then we know that 
+there exists a circular depenency in regards to that symbol. In the context 
+of its intended application, that is definitely the most significant 
+weakness and only one worth mentioning. 

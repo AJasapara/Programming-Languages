@@ -1,0 +1,15 @@
+Why I solved the problem the way I did:
+The first 6 problems are trivial. I simply recursed on the head to traverse the list, used other solutions when necessary, and 
+utilized the List.filter feature to solve them. For filter_unreachable, my logic was to make a total list of reachable nonterminal
+symbols by traversing each rule in the grammar. Then I used List.filter to remove all the rules whose nonterminal symbol was not
+in this list, thus preserving the order.
+
+Other approaches that I considered and rejected (and why I rejected them):
+Another approach I considered was to create a list of unreachable nonterminals by adding a symbol to the list when it does not
+appear on the definition side of any rule. However, I rejected this idea when I realized there could be chains of unreachable
+symbols and accounting for these chains with repeated rechecking of symbols would be very messy and inefficient.
+
+Any weaknesses in my solution in the context of its intended application:
+My solution for filter_unreachable has one weakness in that the nonterminal_list contains duplicates. As of now, there is nothing
+that checks if a symbol already exists in the list prior to adding it. While this won't interfere with the accuracy of the solution,
+it may use extra space to store the duplicates.
